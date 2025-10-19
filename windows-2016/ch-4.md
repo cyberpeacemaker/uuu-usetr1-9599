@@ -119,3 +119,4 @@ So `www.example.com` is a **fully qualified domain name (FQDN)**.
 | **Subdomain**        | `mail.example.com`  | Used to organize or separate services |
 
 ---
+

@@ -18,9 +18,9 @@
 </head>
 <body>
     <h2>Subnet Mask Calculator</h2>
-<p>Using the CIDR prefix length to slice the binary string and then padding it is a neat shortcut instead of doing the bitwise AND for every octet manually.
+
     
-### Traditional approach (bitwise AND):
+<!-- ### Traditional approach (bitwise AND):
 
 * You convert IP and subnet mask into 4 separate octets.
 * Perform a bitwise AND between each IP octet and mask octet.
@@ -48,7 +48,7 @@
 
 * For educational tools and small projects, CIDR slicing is perfect.
 * For low-level networking or performance-critical code, bitwise operations might be preferred (in languages like C or Python).
-* Both methods end up with the same result.
+* Both methods end up with the same result. -->
 
 </p>
 
@@ -75,8 +75,9 @@
     <label>
         <input type="radio" name="maskMode" id="maskModeBytes" value="bytes" onchange="toggleMaskInput()"> Subnet Mask
     </label>
-    <br>
-    <label>Subnet Mask:</label>
+</br>
+<div style="height:10px; margin: 20px 0px;">
+<label>Subnet Mask:</label>
     <div class="ip-inputs">
         <input type="number" id="mask1" min="0" max="255" maxlength="3" oninput="updateBinaryDisplay('mask'); moveNext(this, 'mask2')">
         <span class="dot">.</span>
@@ -86,7 +87,9 @@
         <span class="dot">.</span>
         <input type="number" id="mask4" min="0" max="255" maxlength="3" oninput="updateBinaryDisplay('mask')">
     </div>
-    <div id="maskBinaryDisplay" class="binary-output"></div>
+    <div id="maskBinaryDisplay" class="binary-output"></div>    
+</div>
+    
     <br><br>
 
     <button onclick="calculateSubnet()">Calculate</button>

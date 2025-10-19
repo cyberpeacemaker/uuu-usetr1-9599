@@ -4,8 +4,9 @@ Tab
 
 ---
 
-## Help
+## Get & Help
 
+> `Get-Command <*PartofCommandName*>`
 
 > `Get-Help <CommandName> -Parameter *`
 
@@ -28,16 +29,6 @@ Format-Table [[-Property] <Object[]>] [-AutoSize] [-HideTableHeaders] [-Wrap] [-
 * **Curly braces `{ }`** enclose a set of possible choices (enum).
 
 
-
-| Field                      | Meaning                                                                                                                                                                                   |
-| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Required?**              | `false` — This parameter is *optional*. You don’t have to specify it for the command to work.                                                                                             |
-| **Position?**              | `0` — If you provide an argument without specifying `-Property`, PowerShell treats it as this parameter because it is in position 0 (first). So it’s a *positional* parameter at index 0. |
-| **Accept pipeline input?** | `false` — This parameter **does NOT** accept input from the pipeline. You can’t pipe objects directly into `-Property`.                                                                   |
-| **Parameter set name**     | `(All)` — This parameter is available in all parameter sets of the cmdlet. Parameter sets let the cmdlet behave differently based on which parameters are used.                           |
-| **Aliases**                | `None` — This parameter has no alternate names.                                                                                                                                           |
-| **Dynamic?**               | `false` — This parameter is not dynamically generated or changed at runtime.                                                                                                              |
-
 ---
 
 ## cmdlets & function
@@ -51,9 +42,24 @@ Format-Table [[-Property] <Object[]>] [-AutoSize] [-HideTableHeaders] [-Wrap] [-
 | **Error Handling** | Integrated with PowerShell's error system | Can be customized with try/catch       |
 | **Structure**      | Must follow `Verb-Noun` format            | No strict naming convention            |
 
+* **Examples:**
+
+  ```powershell
+  Function Get-Something {
+      Write-Host "Doing something!"
+  }
+  ```
+
+  ```powershell
+  Function My-Function {
+      Param($Name)
+      Write-Host "Hello, $Name"
+  }
+  ```
 
 ---
 
+# Frequent Used
 
 ft, fl
 cf
