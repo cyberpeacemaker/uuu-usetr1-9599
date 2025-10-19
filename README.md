@@ -1,12 +1,25 @@
 # uuu-usetr1-9599
 
+## Page
+
+https://cyberpeacemaker.github.io/uuu-usetr1-9599/
+
+---
+
 ## Events
 
-- [2026 台灣資安大會 || 5/5~5/7](https://cybersec.ithome.com.tw/2026/CFP/)
-    - [Call for Speakers || now~11/30](https://cybersec.ithome.com.tw/2026/CFP/)
+- 2026 台灣資安大會 || 5/5~5/7 (https://cybersec.ithome.com.tw/2026/CFP/)
+    - Call for Speakers || now~11/30 (https://cybersec.ithome.com.tw/2026/CFP/)
 - HITCON
 - DEFCON
 - Black Hat
+
+---
+
+## Certification
+
+- https://www.coursera.org/articles/popular-cybersecurity-certifications
+- https://learn.microsoft.com/en-us/credentials/browse/?roles=security-engineer
 
 ---
 

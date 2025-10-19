@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Show Images from 10.0.1.41</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+    }
+
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
+      background: #a1e0db;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      box-shadow: 0 2px 8px rgba(138, 112, 112, 0.08);
+      z-index: 10000;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.25rem;
+      flex: 1;
+      text-align: center;
+    }
+
+    form {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    input[type="text"] {
+      padding: 1px 8px;
+      font-size: 16px;
+      border: 2px solid #ccc;
+      border-radius: 4px;
+      width: 28px;
+      transition: border-color 0.3s;
+    }
+
+    input[type="text"]:focus {
+      border-color: #007BFF;
+      outline: none;
+    }
+
+    .img-card {
+      margin-bottom: 24px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      max-width: 840px;
+      align-items: center;
+      cursor: pointer;
+      transform-origin: top left;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .img-card:hover {
+      box-shadow: 0 4px 16px rgba(5, 5, 5, 0.85);
+    }
+
+    img {
+      width: 100%;
+      border-radius: 4px;
+      display: block;
+    }
+
+    hr {
+      width: 100%;
+      margin: 24px 0;
+      border: none;
+      border-top: 1px solid #ccc;
+    }
+
+    main {
+      margin-top: 80px;
+      padding: 16px;
+    }
+
+    #back-to-top {
+      text-decoration: none;
+      color: #333;
+      padding: 8px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>    
+    <form id="imageForm">
+      <label>Prefix:<input style="width: 38px;" type="text" id="prefix" value="LAB" required></label>
+      <label>Chapter Index:<input type="text" id="chap-index" value="04" pattern="\d{2}" required></label>
+      <label>Image Index:<input type="text" id="start-index" value="0" pattern="\d{2}" required></label>
+    </form>
+    <span style="margin: 0 10px; background-color: #f5d57d;">Starting Filename: <span id="filename">LAB01-25.png</span></span>
+    <button style="margin: 0 10px;" type="button" id="load-images-btn">Load Images</button>
+    <a href="#" id="back-to-top" title="Back to top">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="6 15 12 9 18 15"></polyline>
+      </svg>
+    </a>
+  </header>
+  <h1>Images from 10.0.1.41</h1>
+  <main>
+    <div id="image-container">Loading...</div>
+  </main>
+
+  <script>
+    const container = document.getElementById('image-container');
+    const loadBtn = document.getElementById('load-images-btn');
+    const filenameDisplay = document.getElementById('filename');
+    const prefixInput = document.getElementById('prefix');
+    const chapInput = document.getElementById('chap-index');
+    const startInput = document.getElementById('start-index');
+
+    // Smooth scroll to top
+    document.getElementById('back-to-top').addEventListener('click', function (e) {
+      e.preventDefault();
+      const duration = 600; 
+      const start = window.scrollY || window.pageYOffset;
+      const startTime = performance.now();
+      const target = 0;
+      const distance = target - start;
+      const easeInOutCubic = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+      function step(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = easeInOutCubic(progress);
+        window.scrollTo(0, Math.round(start + distance * eased));
+        if (elapsed < duration) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    });
+
+    //TODO: Pad function length parameter
+    function pad(num, length = 2) { return String(num).padStart(length, '0'); }
+
+    function createImageCard(filename, url) {
+      const card = document.createElement('div');
+      card.className = 'img-card';
+
+      const title = document.createElement('div');
+      title.textContent = filename;
+      title.style.fontWeight = 'bold';
+      title.style.marginBottom = '8px';
+      card.appendChild(title);
+
+      const img = document.createElement('img');
+      img.src = url;
+      img.alt = filename;
+      card.appendChild(img);
+
+      // Modal on click
+      card.addEventListener('click', () => {
+        const modalBg = document.createElement('div');
+        modalBg.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:9999;';
+        const modalImg = document.createElement('img');
+        modalImg.src = url;
+        modalImg.alt = filename;
+        modalImg.style.cssText = 'max-width:90vw;max-height:90vh;border-radius:8px;box-shadow:0 4px 32px rgba(0,0,0,0.5);background:#fff;';
+        modalBg.addEventListener('click', e => { if (e.target === modalBg) modalBg.remove(); });
+        modalBg.appendChild(modalImg);
+        document.body.appendChild(modalBg);
+      });
+
+      function smoothScale(card, img, direction='in') {
+        if (card._scaling) return;
+        
+        //TODO: OPTIMIZE
+        const currentScale = card._currentScale || 1;
+        let targetScale = direction == 'in'? img.naturalWidth / card.offsetWidth : 1;        
+        targetScale = targetScale < 1 ? 1 : (targetScale + .3);
+        card.style.transform = `scale(${targetScale})`;
+        //console.log('scaling to', targetScale);
+      }
+
+      const currentTransform = getComputedStyle(card).transform;
+      let startScale = 1;
+      if (currentTransform !== 'none') {
+        const match = currentTransform.match(/matrix\(([^,]+),[^,]+,[^,]+,[^,]+,[^,]+,[^,]+\)/);
+        if (match) startScale = parseFloat(match[1]);
+      }
+
+      card.addEventListener('mouseenter', () => smoothScale(card, img, 'in'));
+      card.addEventListener('mouseleave', () => smoothScale(card, img, 'out'));
+
+      return card;
+    }
+
+    async function isImageValid(url) {
+      return new Promise(resolve => {
+        const img = new Image();
+        img.onload = () => resolve(true);
+        img.onerror = () => resolve(false);
+        img.src = url;
+      });
+    }
+
+    async function loadImages() {
+      container.innerHTML = '';
+      const prefix = prefixInput.value;
+      const chapter = pad(chapInput.value);
+      let index = parseInt(startInput.value, 10) || 0;
+
+      while (true) {
+        const filename = `${prefix}${chapter}-${pad(index)}.PNG`;
+        // const url = `http://10.0.1.41/${filename}`;
+        const url = `http://127.0.0.1:3000/tools/LAB04/${filename}`;
+        const valid = await isImageValid(url);
+        if (!valid) break;
+
+        container.appendChild(createImageCard(filename, url));
+        container.appendChild(document.createElement('hr'));
+        index++;
+      }
+    }
+
+    loadBtn.addEventListener('click', loadImages);
+
+    // Update filename display
+    [prefixInput, chapInput, startInput].forEach(input => {
+      input.addEventListener('input', () => {
+        filenameDisplay.textContent = `${prefixInput.value}${pad(chapInput.value)}-${pad(startInput.value)}.png`;
+      });
+    });
+
+    // Initial load
+    loadImages();
+  </script>
+
+</body>
+
+</html>

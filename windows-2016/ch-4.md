@@ -90,7 +90,7 @@ A **hostname** is the **human-readable name of a device** on a network.
 
 ---
 
-## 🔑 What is a **DNS domain**?
+## 🔑 What is **DNS domain**?
 
 A **DNS domain** is a **human-readable name** (like `example.com`) that corresponds to one or more **IP addresses** and is used to access websites, send emails, and more.
 
@@ -117,3 +117,5 @@ So `www.example.com` is a **fully qualified domain name (FQDN)**.
 | **Top-Level Domain** | `com`, `org`, `net` | Controlled by domain registries       |
 | **Second-Level**     | `example.com`       | Registered by individuals/companies   |
 | **Subdomain**        | `mail.example.com`  | Used to organize or separate services |
+
+---
