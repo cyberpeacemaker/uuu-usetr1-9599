@@ -44,8 +44,28 @@ try {
     Log "Failed to start 20741B-LON-DC1: $($_.Exception.Message)" Red
 }
 
-Start-Sleep -Seconds 60
+# Pause 60 seconds in 2-second intervals with progress and logging
+$totalSeconds = 60
+$interval = 2
+$iterations = [int]($totalSeconds / $interval)
 
+Log "Pausing $totalSeconds seconds in $interval-second intervals..." Yellow
+
+for ($i = 1; $i -le $iterations; $i++) {
+    $elapsed = $i * $interval
+    if ($elapsed -gt $totalSeconds) { $elapsed = $totalSeconds }
+    $remaining = $totalSeconds - $elapsed
+    $percent = [int](($elapsed / $totalSeconds) * 100)
+
+    Write-Progress -Activity "Waiting between VM starts" `
+                   -Status "Elapsed: ${elapsed}s / ${totalSeconds}s — Remaining: ${remaining}s" `
+                   -PercentComplete $percent
+
+    Start-Sleep -Seconds $interval
+}
+
+Write-Progress -Activity "Waiting between VM starts" -Completed
+Log "Pause complete ($totalSeconds seconds)." Green
 foreach ($name in @('20741B-NA-RTR','20741B-EU-RTR')) {
     try {
         Log "Starting $name..." Cyan
@@ -56,7 +76,28 @@ foreach ($name in @('20741B-NA-RTR','20741B-EU-RTR')) {
     }
 }
 
-Start-Sleep -Seconds 30
+# Pause 30 seconds in 2-second intervals with progress and logging
+$totalSeconds = 30
+$interval = 2
+$iterations = [int]($totalSeconds / $interval)
+
+Log "Pausing $totalSeconds seconds in $interval-second intervals..." Yellow
+
+for ($j = 1; $j -le $iterations; $j++) {
+    $elapsed = $j * $interval
+    if ($elapsed -gt $totalSeconds) { $elapsed = $totalSeconds }
+    $remaining = $totalSeconds - $elapsed
+    $percent = [int](($elapsed / $totalSeconds) * 100)
+
+    Write-Progress -Activity "Waiting before next batch" `
+                   -Status "Elapsed: ${elapsed}s / ${totalSeconds}s — Remaining: ${remaining}s" `
+                   -PercentComplete $percent
+
+    Start-Sleep -Seconds $interval
+}
+
+Write-Progress -Activity "Waiting before next batch" -Completed
+Log "Pause complete ($totalSeconds seconds)." Green
 
 foreach ($name in @(
     '20741B-LON-CL1',

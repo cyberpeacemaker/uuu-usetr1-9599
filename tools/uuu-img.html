@@ -102,10 +102,10 @@
   <header>    
     <form id="imageForm">
       <label>Prefix:<input style="width: 38px;" type="text" id="prefix" value="LAB" required></label>
-      <label>Chapter Index:<input type="text" id="chap-index" value="04" pattern="\d{2}" required></label>
-      <label>Image Index:<input type="text" id="start-index" value="50" pattern="\d{2}" required></label>
+      <label>Chapter Index:<input type="text" id="chap-index" value="05" pattern="\d{2}" required></label>
+      <label>Image Index:<input type="text" id="start-index" value="00" pattern="\d{2}" required></label>
     </form>
-    <span style="margin: 0 10px; background-color: #f5d57d;">1st: <span id="filename">LAB01-25.png</span></span>
+    <span style="margin: 0 10px; padding: 4px 8px ;background-color: #f5d57d;">1st: <span id="filename">LAB01-25.png</span></span>
     <button style="margin: 0 10px;" type="button" id="load-images-btn">Load Images</button>
     <a href="#" id="back-to-top" title="Back to top">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -220,8 +220,8 @@
       while (true) {
         const filename = `${prefix}${chapter}-${pad(index)}.PNG`;
         filenameDisplay.textContent = filename;
-        // const url = `http://10.0.1.41/${filename}`;
-        const url = `http://127.0.0.1:3000/tools/LAB04/${filename}`;
+        const url = `http://10.0.1.41/${filename}`;
+        // const url = `http://127.0.0.1:3000/tools/LAB04/${filename}`;
         const valid = await isImageValid(url);
         if (!valid) break;
 
