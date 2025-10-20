@@ -103,7 +103,7 @@
     <form id="imageForm">
       <label>Prefix:<input style="width: 38px;" type="text" id="prefix" value="LAB" required></label>
       <label>Chapter Index:<input type="text" id="chap-index" value="05" pattern="\d{2}" required></label>
-      <label>Image Index:<input type="text" id="start-index" value="00" pattern="\d{2}" required></label>
+      <label>Image Index:<input type="text" id="start-index" value="08" pattern="\d{2}" required></label>
     </form>
     <span style="margin: 0 10px; padding: 4px 8px ;background-color: #f5d57d;">1st: <span id="filename">LAB01-25.png</span></span>
     <button style="margin: 0 10px;" type="button" id="load-images-btn">Load Images</button>
@@ -186,6 +186,29 @@
         targetScale = targetScale < 1 ? 1 : (targetScale + .3);
         card.style.transform = `scale(${targetScale})`;
         //console.log('scaling to', targetScale);
+
+        if (card._originalZIndex === undefined) {
+          // store original inline z-index (may be empty string)
+          card._originalZIndex = card.style.zIndex || '';
+        }
+
+        // bring to front for 'in', restore for 'out' after transition
+        if (direction === 'in') {
+          card.style.zIndex = '10001'; // header uses 10000, keep this above it
+        } else {
+          // wait until transform transition likely finished before restoring z-index
+          if (card._scaleTimeout) clearTimeout(card._scaleTimeout);
+          card._scaleTimeout = setTimeout(() => {
+            card.style.zIndex = card._originalZIndex;
+          }, 350); // slightly longer than CSS transition(0.3s)
+        }
+
+        // mark scaling state and update current scale
+        if (card._scaleTimeout) clearTimeout(card._scaleTimeout);
+        card._scaling = true;
+        card._currentScale = targetScale;
+        // clear scaling flag after transition
+        card._scaleTimeout = setTimeout(() => { card._scaling = false; }, 350);
       }
 
       const currentTransform = getComputedStyle(card).transform;
