@@ -8,9 +8,68 @@ $finalVMs = @(
     "20741B-LON-SVR1", "20741B-LON-SVR2"
 )
 
+function Log {
+    param(
+        [Parameter(Mandatory=$true)][string]$Message,
+        [ConsoleColor]$Color = 'White'
+    )
+    $ts = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
+    Write-Host "[$ts] $Message" -ForegroundColor $Color
+}
+
+Log "Beginning reset process. Restoring all VMs to checkpoint 'Starting Image'..." Cyan
+Log "Restore will run non-interactively (-Confirm:$false)." Yellow
+
 # Restore all VMs to a known state
 # TODO: Exclude no checkpoint VMs if any
-Get-VM | Restore-VMCheckpoint -Name "Starting Image" -Confirm:$false
+# Restore each VM with progress and logging
+function Restore-VMsToCheckpoint {
+    param(
+        [Parameter(Mandatory=$true)][object[]]$VMs,
+        [string]$CheckpointName = 'Starting Image'
+    )
+
+    $total = $VMs.Count
+    if ($total -eq 0) { return $true }
+
+    $i = 0
+    $failed = @()
+
+    foreach ($vm in $VMs) {
+        $i++
+        # Accept either VM objects or VM name strings
+        if ($vm -is [string]) {
+            $name = $vm
+        } elseif ($vm -is [PSObject] -and $vm.PSObject.Properties['Name']) {
+            $name = $vm.Name
+        } else {
+            $name = $vm.ToString()
+        }
+
+        $percent = if ($total -gt 0) { [int](($i / $total) * 100) } else { 100 }
+        Write-Progress -Activity "Restoring VMs" -Status "Restoring $name ($i/$total)" -PercentComplete $percent
+
+        Log "Restoring VM '$name' to checkpoint '$CheckpointName'..." Cyan
+        try {
+            Restore-VMCheckpoint -VMName $name -Name $CheckpointName -Confirm:$false -ErrorAction Stop
+            Log "Restored '$name'." Green
+        } catch {
+            Log "Failed to restore '$name': $($_.Exception.Message)" Red
+            $failed += $name
+        }
+    }
+
+    if ($failed.Count -gt 0) {
+        Write-Warning "Restore failed for: $($failed -join ', ')"
+        return $false
+    }
+
+    return $true
+}
+
+# Invoke the new function for all VMs
+$restoreSuccess = Restore-VMsToCheckpoint -VMs $vms -CheckpointName "Starting Image"
+Write-Progress -Activity "Restoring VMs" -Completed
 
 # Function to wait for heartbeat
 function Wait-ForHeartbeat {
