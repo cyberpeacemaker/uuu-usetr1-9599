@@ -62,10 +62,11 @@
       align-items: center;
       cursor: pointer;
       transform-origin: top left;
-      transition: transform 0.3s, box-shadow 0.3s;
     }
+
     .img-card:hover {
       box-shadow: 0 4px 16px rgba(5, 5, 5, 0.85);
+      max-width: none;
     }
 
     img {
@@ -99,13 +100,14 @@
 
 <body>
 
-  <header>    
+  <header>
     <form id="imageForm">
       <label>Prefix:<input style="width: 38px;" type="text" id="prefix" value="LAB" required></label>
-      <label>Chapter Index:<input type="text" id="chap-index" value="05" pattern="\d{2}" required></label>
+      <label>Chapter Index:<input type="text" id="chap-index" value="06" pattern="\d{2}" required></label>
       <label>Image Index:<input type="text" id="start-index" value="00" pattern="\d{2}" required></label>
     </form>
-    <span style="margin: 0 10px; padding: 4px 8px ;background-color: #f5d57d;">1st: <span id="filename">LAB01-25.png</span></span>
+    <span style="margin: 0 10px; padding: 4px 8px ;background-color: #f5d57d;">1st: <span
+        id="filename">LAB01-25.png</span></span>
     <button style="margin: 0 10px;" type="button" id="load-images-btn">Load Images</button>
     <a href="#" id="back-to-top" title="Back to top">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -130,7 +132,7 @@
     // Smooth scroll to top
     document.getElementById('back-to-top').addEventListener('click', function (e) {
       e.preventDefault();
-      const duration = 600; 
+      const duration = 600;
       const start = window.scrollY || window.pageYOffset;
       const startTime = performance.now();
       const target = 0;
@@ -148,6 +150,7 @@
 
     //TODO: Pad function length parameter
     function pad(num, length = 2) { return String(num).padStart(length, '0'); }
+    // Update filename display with sanitization to reduce XSS/invalid chars
 
     function createImageCard(filename, url) {
       const card = document.createElement('div');
@@ -164,40 +167,6 @@
       img.alt = filename;
       card.appendChild(img);
 
-      // Modal on click
-      card.addEventListener('click', () => {
-        const modalBg = document.createElement('div');
-        modalBg.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:9999;';
-        const modalImg = document.createElement('img');
-        modalImg.src = url;
-        modalImg.alt = filename;
-        modalImg.style.cssText = 'max-width:90vw;max-height:90vh;border-radius:8px;box-shadow:0 4px 32px rgba(0,0,0,0.5);background:#fff;';
-        modalBg.addEventListener('click', e => { if (e.target === modalBg) modalBg.remove(); });
-        modalBg.appendChild(modalImg);
-        document.body.appendChild(modalBg);
-      });
-
-      function smoothScale(card, img, direction='in') {
-        if (card._scaling) return;
-        
-        //TODO: OPTIMIZE
-        const currentScale = card._currentScale || 1;
-        let targetScale = direction == 'in'? img.naturalWidth / card.offsetWidth : 1;        
-        targetScale = targetScale < 1 ? 1 : (targetScale + .3);
-        card.style.transform = `scale(${targetScale})`;
-        //console.log('scaling to', targetScale);
-      }
-
-      const currentTransform = getComputedStyle(card).transform;
-      let startScale = 1;
-      if (currentTransform !== 'none') {
-        const match = currentTransform.match(/matrix\(([^,]+),[^,]+,[^,]+,[^,]+,[^,]+,[^,]+\)/);
-        if (match) startScale = parseFloat(match[1]);
-      }
-
-      card.addEventListener('mouseenter', () => smoothScale(card, img, 'in'));
-      card.addEventListener('mouseleave', () => smoothScale(card, img, 'out'));
-
       return card;
     }
 
@@ -210,18 +179,46 @@
       });
     }
 
+    function sanitizePrefix(val) {
+      // Allow letters, digits, underscore, dash; max 8 chars, uppercase
+      return String(val || '').toUpperCase().replace(/[^A-Z0-9_-]/g, '').slice(0, 8) || 'LAB';
+    }
+
+    function sanitizeNumber(val, maxLen = 2) {
+      // Keep digits only, limit to maxLen digits, default to "0"
+      const s = String(val || '').replace(/\D/g, '').slice(0, maxLen);
+      return s === '' ? '0' : s;
+    }
+
+    function sanitizeInputs() {
+      // Sanitize all inputs and update the fields
+      const safePrefix = sanitizePrefix(prefixInput.value);
+      const safeChap = sanitizeNumber(chapInput.value, 2);
+      const safeStart = sanitizeNumber(startInput.value, 2);
+
+      prefixInput.value = safePrefix;
+      chapInput.value = safeChap;
+      startInput.value = safeStart;
+
+      // Display safe filename (protects against injection)
+      filenameDisplay.textContent = `${safePrefix}${pad(safeChap)}-${pad(safeStart)}.png`;
+
+      return {
+        prefix: safePrefix,
+        chapter: pad(safeChap),
+        startIndex: parseInt(safeStart, 10) || 0,
+      };
+    }
+
     async function loadImages() {
       container.innerHTML = '';
-      const prefix = prefixInput.value;
-      const chapter = pad(chapInput.value);
-      let index = parseInt(startInput.value, 10) || 0;
+      const { prefix, chapter, startIndex } = sanitizeInputs();
 
-      //TODO:
+      let index = startIndex;
       while (true) {
         const filename = `${prefix}${chapter}-${pad(index)}.PNG`;
-        filenameDisplay.textContent = filename;
         const url = `http://10.0.1.41/${filename}`;
-        // const url = `http://127.0.0.1:3000/tools/LAB04/${filename}`;
+
         const valid = await isImageValid(url);
         if (!valid) break;
 
@@ -231,38 +228,14 @@
       }
     }
 
-    
-
-    // Update filename display with sanitization to reduce XSS/invalid chars
-    function sanitizePrefix(val) {
-      // allow letters, digits, underscore, dash; max 8 chars, uppercase
-      return String(val || '').toUpperCase().replace(/[^A-Z0-9_-]/g, '').slice(0, 8) || 'LAB';
-    }
-    function sanitizeNumber(val, maxLen = 2) {
-      // keep digits only, maxLen digits, default "0"
-      const s = String(val || '').replace(/\D/g, '').slice(0, maxLen);
-      return s === '' ? '0' : s;
-    }
-
+    // Real-time input sanitization and filename preview
     [prefixInput, chapInput, startInput].forEach(input => {
-      input.addEventListener('input', () => {
-        // sanitize and write back to inputs (prevents malicious characters in the inputs)
-        const safePrefix = sanitizePrefix(prefixInput.value);
-        const safeChap = sanitizeNumber(chapInput.value, 2);
-        const safeStart = sanitizeNumber(startInput.value, 2);
-
-        prefixInput.value = safePrefix;
-        chapInput.value = safeChap;
-        startInput.value = safeStart;
-
-        // textContent is used to avoid HTML injection
-        filenameDisplay.textContent = `${safePrefix}${pad(safeChap)}-${pad(safeStart)}.png`;
-      });
+      input.addEventListener('input', sanitizeInputs);
     });
 
-    // Initial load
-
+    // Load button triggers image loading
     loadBtn.addEventListener('click', loadImages);
+
     loadImages();
   </script>
 

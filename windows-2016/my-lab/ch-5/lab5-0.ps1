@@ -1,3 +1,6 @@
+# Install IPAM Services
+Install-WindowsFeature IPAM -IncludeManagementTools
+
 #Begin script
 Write-Output "Starting Script"
 #Install and configure DHCP as in Mod 1

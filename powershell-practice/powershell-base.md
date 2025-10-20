@@ -14,6 +14,7 @@ Tab
 cmd:
 > `<CommandName> /?`
 
+> `Get-Service | Where-Object { $_.DisplayName -like "*Remote*" }`
 ---
 
 ## What the brackets and symbols mean:
