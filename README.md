@@ -3,7 +3,6 @@
 ## Page
 
 https://cyberpeacemaker.github.io/uuu-usetr1-9599/
-https://cyberpeacemaker.github.io/uuu-usetr1-9599/tools/uuu-img.html
 
 ---
 

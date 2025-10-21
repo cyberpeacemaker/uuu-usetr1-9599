@@ -15,6 +15,9 @@ cmd:
 > `<CommandName> /?`
 
 > `Get-Service | Where-Object { $_.DisplayName -like "*Remote*" }`
+
+> `Get-Member`
+    
 ---
 
 ## What the brackets and symbols mean:
