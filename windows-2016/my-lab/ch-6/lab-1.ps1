@@ -18,12 +18,11 @@ Import-Certificate -FilePath $caCertPath -CertStoreLocation Cert:\LocalMachine\R
 
 
 
-adfswap.adatum.com
 
-adfswap.adatum.com
-rdgw.adatum.com
-lon-svr1.adatum.com
 
-Install-WebApplicationProxy -FederationServiceTrustCredential System.Management.Automation.PSCredential -CertificateThumbprint '015CFC6C7DDDAC1E7B1461D17DB4296EFE180F4C' -FederationServiceName 'adfswap.adatum.com'
+Install-WebApplicationProxy `
+    -FederationServiceTrustCredential (Get-Credential) `
+    -CertificateThumbprint '015CFC6C7DDDAC1E7B1461D17DB4296EFE180F4C' `
+    -FederationServiceName 'adfswap.adatum.com'
 
 Add-WebApplicationProxyApplication -BackendServerUrl 'https://lon-svr1.adatum.com' -ExternalCertificateThumbprint '015CFC6C7DDDAC1E7B1461D17DB4296EFE180F4C' -ExternalUrl 'https://lon-svr1.adatum.com' -Name 'Adatum LOB Web App (LON-SVR1)' -ExternalPreAuthentication PassThrough
