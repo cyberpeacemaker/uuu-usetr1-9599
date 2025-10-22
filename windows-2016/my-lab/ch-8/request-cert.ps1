@@ -18,6 +18,7 @@ param(
     [string]$targetStore = 'Cert:\LocalMachine\My'
 )
 
+# TODO: subjectName Simplification
 $subjectName = "$subjectNameType=$subjectNameSuffix"
 
 # Request the certificate
