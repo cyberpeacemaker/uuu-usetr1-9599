@@ -9,7 +9,7 @@ Tab
 
 > `Get-Command <*PartofCommandName*>`
 
-> `Get-Help <CommandName> -Parameter *`
+> `Get-Help <CommandName> -Parameter * -detailed`
 
 cmd:
 > `<CommandName> /?`
