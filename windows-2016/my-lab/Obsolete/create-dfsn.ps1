@@ -1,8 +1,13 @@
 # -Path: \\domain.com\NamespaceName
 # -TargetPath: \\Server\NamespaceShare$ (host server)
 
+New-Item -Path "C:\CorpData" -ItemType Directory
+New-SmbShare -Name "CorpData" -Path "C:\CorpData" -FullAccess "Domain Admins"
+Test-Path "\\LON-SVR1\CorpData"
+
+
 New-DfsnRoot `
-  -Path "\\adatum.com\CorpData" `
+  -Path "\\Adatum.com\CorpData" `
   -TargetPath "\\LON-SVR1\CorpData" `
   -Type DomainV2 `
   -EnableSiteCosting $true  

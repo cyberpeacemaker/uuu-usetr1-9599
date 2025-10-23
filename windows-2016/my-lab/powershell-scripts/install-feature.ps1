@@ -1,7 +1,7 @@
 
 # Get-WindowsFeature is no longer shipped with Windows or Windows Server and must be installed separately 
 # by installing the Windows Server Remote Administration Tools.
-# TODO: Resource links:
+# Resource links:
 # https://learn.microsoft.com/en-us/troubleshoot/windows-server/system-management-components/remote-server-administration-tools
 # https://learn.microsoft.com/en-us/windows-server/administration/install-remote-server-administration-tools?tabs=windows-powershell%2Cdesktop-experience&pivots=windows-server-2025
 # $serverManager = Get-Module -ListAvailable -Name ServerManager
@@ -18,6 +18,6 @@
 
 Get-WindowsFeature -Name "*FS-DFS*"
 Install-WindowsFeature FS-DFS-Namespace, FS-DFS-Replication -IncludeManagementTools
-
-
 write-Host "DFS Namespace and Replication features installed."
+Get-WindowsFeature -Name "*FS-DFS*"
+
